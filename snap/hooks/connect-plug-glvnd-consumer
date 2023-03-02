@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -eo pipefail
+
+mkdir -p $SNAP_DATA/drivers
+cp -a $SNAP/glvnd-sources/* $SNAP_DATA/drivers
