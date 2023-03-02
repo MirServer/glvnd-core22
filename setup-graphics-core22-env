@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -eu
+
+parse_file() {
+  declare -n output_array=${1}
+  declare -a input_lines
+  readarray -t input_lines
+  for line in "${input_lines[@]}"
+  do
+    output_array[${line%%=*}]=${line#*=}
+  done
+  return 0
+}
+
+append_environment() {
+  local -nr requested_environment=${1}
+  for var in "${!requested_environment[@]}" ; 
+  do
+    export ${var}="${!var:+${!var}:}${requested_environment[${var}]}"
+  done
+}
+
+prepend_environment() {
+  local -nr requested_environment=${1}
+  for var in "${!requested_environment[@]}" ; 
+  do
+    export ${var}="${requested_environment[${var}]}${!var:+:${!var}}"
+  done
+}
+
+exec "$@"
