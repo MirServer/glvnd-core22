@@ -46,6 +46,8 @@ parts:
     prime:
       - -usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri       # libglx0 pulls dri in
       - -usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libdrm_*  # and drm, as a result
+      - -usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libEGL_*  # libegl1 pulls libegl-mesa0 in
+      - -usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libGLX_*  # libglx0 pulls libglx-mesa0 in
       - usr/lib
 
   drm:
@@ -105,6 +107,8 @@ parts:
       prime:
         - -usr/lib/i386-linux-gnu/dri       # libglx0 pulls dri in
         - -usr/lib/i386-linux-gnu/libdrm_*  # and drm, as a result
+        - -usr/lib/i386-linux-gnu/libEGL_*  # libegl1 pulls libegl-mesa0 in
+        - -usr/lib/i386-linux-gnu/libGLX_*  # libglx0 pulls libglx-mesa0 in
         - usr/lib
 
   drm-i386:
