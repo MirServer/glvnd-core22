@@ -66,6 +66,7 @@ parts:
       - libxcb-dri2-0
       - libxcb-dri3-0
       - libxcb-present0
+      - libxcb-randr0
       - libxcb-sync1
       - libxcb-xfixes0
       - libxcb1
@@ -128,6 +129,7 @@ parts:
         - libxcb-dri2-0:i386
         - libxcb-dri3-0:i386
         - libxcb-present0:i386
+        - libxcb-randr0:i386
         - libxcb-sync1:i386
         - libxcb-xfixes0:i386
         - libxcb1:i386
