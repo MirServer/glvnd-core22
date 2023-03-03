@@ -44,15 +44,9 @@ parts:
       - libvulkan1
       - libglx0
     prime:
+      - -usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri       # libglx0 pulls dri in
+      - -usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libdrm_*  # and drm, as a result
       - usr/lib
-      - usr/share/glvnd
-      - -usr/share/X11
-      - -usr/share/bug
-      - -usr/share/doc
-      - -usr/share/lintian
-      - -usr/share/man
-      - etc/glvnd
-      - -etc/vulkan
 
   drm:
     # DRM userspace
@@ -62,8 +56,6 @@ parts:
       - libdrm2
     prime:
       - usr/lib
-      - -usr/share/doc
-      - -etc
 
   x11:
     # X11 support (not much cost to having this)
@@ -83,9 +75,6 @@ parts:
     prime:
       - usr/lib
       - usr/share/X11
-      - -usr/share/doc
-      - -usr/share/lintian
-      - -usr/share/man
 
   wayland:
     # Wayland support (not much cost to having this)
@@ -96,7 +85,6 @@ parts:
       - libwayland-server0
     prime:
       - usr/lib
-      - -usr/share/doc
 
   apis-i386:
       # This provides the essential APIs
@@ -114,15 +102,9 @@ parts:
       override-prime: |
         if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
       prime:
+        - -usr/lib/i386-linux-gnu/dri       # libglx0 pulls dri in
+        - -usr/lib/i386-linux-gnu/libdrm_*  # and drm, as a result
         - usr/lib
-        - usr/share/glvnd
-        - -usr/share/X11
-        - -usr/share/bug
-        - -usr/share/doc
-        - -usr/share/lintian
-        - -usr/share/man
-        - etc/glvnd
-        - -etc/vulkan
 
   drm-i386:
     # DRM userspace
@@ -135,8 +117,6 @@ parts:
       if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
     prime:
       - usr/lib
-      - -usr/share/doc
-      - -etc
 
   x11-i386:
     # X11 support (not much cost to having this)
@@ -159,9 +139,6 @@ parts:
     prime:
       - usr/lib
       - usr/share/X11
-      - -usr/share/doc
-      - -usr/share/lintian
-      - -usr/share/man
 
   wayland-i386:
     # Wayland support (not much cost to having this)
@@ -175,7 +152,6 @@ parts:
       if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
     prime:
       - usr/lib
-      - -usr/share/doc
 
 slots:
   graphics-core22:
