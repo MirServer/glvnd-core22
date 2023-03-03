@@ -42,6 +42,12 @@ EOF
   assert_line "Yo!"
 }
 
+@test "script passes further arguments to the executed command separately" {
+  run setup-graphics-core22-env ${TESTS_DIR}/test_executable "Yo!" "Two Too"
+  assert_line "Yo!"
+  assert_line "Two Too"
+}
+
 @test "append_environment adds new environment variable" {
   declare -A requested_variables=( [GREETING]=hello )
   append_environment requested_variables
