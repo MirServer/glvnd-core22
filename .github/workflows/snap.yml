@@ -21,7 +21,7 @@ jobs:
         - armhf
         - arm64
         - ppc64el
-        - s390x
+        # Broken: - s390x
 
     steps:
     - name: Check out code
