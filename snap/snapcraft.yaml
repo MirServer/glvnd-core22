@@ -129,7 +129,7 @@ parts:
           - libvulkan1:i386
           - libglx0:i386
       override-prime: |
-        if [ `arch` = "x86_64" ]; then craftctl default; fi
+        if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
       prime:
         - usr/lib
         - usr/share/glvnd
@@ -149,7 +149,7 @@ parts:
       - on amd64:
         - libdrm2:i386
     override-prime: |
-      if [ `arch` = "x86_64" ]; then craftctl default; fi
+      if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
     prime:
       - usr/lib
       - -usr/share/doc
@@ -166,7 +166,7 @@ parts:
         - libva-drm2
         - libva-wayland2
     override-prime: |
-      if [ `arch` = "x86_64" ]; then craftctl default; fi
+      if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
     prime:
       - usr/lib
       - -usr/share
@@ -189,7 +189,7 @@ parts:
         - libxdmcp6:i386
         - libxshmfence1:i386
     override-prime: |
-      if [ `arch` = "x86_64" ]; then craftctl default; fi
+      if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
     prime:
       - usr/lib
       - usr/share/X11
@@ -206,7 +206,7 @@ parts:
         - libwayland-egl1:i386
         - libwayland-server0:i386
     override-prime: |
-      if [ `arch` = "x86_64" ]; then craftctl default; fi
+      if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
     prime:
       - usr/lib
       - -usr/share/doc
