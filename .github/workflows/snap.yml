@@ -29,8 +29,6 @@ jobs:
       with:
         fetch-depth: 0  # needed for version determination
 
-    - uses: docker/setup-qemu-action@v2
-
     - name: Build and publish the snap
       uses: canonical/actions/build-snap@multiarch
       with:
