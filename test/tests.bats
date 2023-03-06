@@ -7,7 +7,7 @@ setup() {
     # get the containing directory of this file
     # use $BATS_TEST_FILENAME instead of ${BASH_SOURCE[0]} or $0,
     # as those will point to the bats executable's location or the preprocessed file respectively
-    TESTS_DIR="$( cd "$( dirname "$BATS_TEST_FILENAME" )" >/dev/null 2>&1 && pwd )"
+    TESTS_DIR="$( readlink -f "$( dirname "$BATS_TEST_FILENAME" )" )"
 
     source ${TESTS_DIR}/../setup-graphics-core22-env
     # Simplify running the script by adding the source directory to $PATH
@@ -42,6 +42,12 @@ EOF
   assert_line "Yo!"
 }
 
+@test "script passes further arguments to the executed command separately" {
+  run setup-graphics-core22-env ${TESTS_DIR}/test_executable "Yo!" "Two Too"
+  assert_line "Yo!"
+  assert_line "Two Too"
+}
+
 @test "append_environment adds new environment variable" {
   declare -A requested_variables=( [GREETING]=hello )
   append_environment requested_variables
@@ -49,7 +55,7 @@ EOF
 }
 
 @test "append_environment extends existing environment variable" {
-  declare -A requested_variables=( [LD_LIBRARY_PATH]=graphics/lib)
+  declare -A requested_variables=( [LD_LIBRARY_PATH]=graphics/lib )
   LD_LIBRARY_PATH=/usr/lib
   append_environment requested_variables
   assert_equal "${LD_LIBRARY_PATH}" "/usr/lib:graphics/lib"

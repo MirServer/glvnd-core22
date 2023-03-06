@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo Test run
+for var in "$@"; do
+  echo $var
+done

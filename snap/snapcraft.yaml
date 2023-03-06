@@ -17,27 +17,26 @@ architectures:
   - build-on: s390x
   - build-on: riscv64
 
-package-repositories:
-  - type: apt
-    url: http://archive.ubuntu.com/ubuntu/
-    suites: [jammy]
-    components: [main, universe]
-    architectures: [i386]
-    key-id: F6ECB3762474EDA9D21B7022871920D1991BC93C
-    key-server: keyserver.ubuntu.com
-
 parts:
   wrapper:
     plugin: dump
     source: scripts
 
+  i386-repo:
+    plugin: nil
+    override-pull: |
+      if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then
+        dpkg --add-architecture i386
+        apt-get update
+      fi
+
   apis:
     # This provides the essential APIs
     #   o libEGL.so.1
-    #   o libva.so.2
     #   o libvulkan.so.1
     #   o libGLX.so.0
     #
+    after: [i386-repo]  # because LP#2009278
     plugin: nil
     stage-packages:
       - libegl1
@@ -45,44 +44,25 @@ parts:
       - libvulkan1
       - libglx0
     prime:
+      - -usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri       # libglx0 pulls dri in
+      - -usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libdrm_*  # and drm, as a result
+      - -usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libEGL_*  # libegl1 pulls libegl-mesa0 in
+      - -usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/libGLX_*  # libglx0 pulls libglx-mesa0 in
       - usr/lib
-      - usr/share/glvnd
-      - -usr/share/X11
-      - -usr/share/bug
-      - -usr/share/doc
-      - -usr/share/lintian
-      - -usr/share/man
-      - etc/glvnd
-      - -etc/vulkan
 
   drm:
     # DRM userspace
     #   o libdrm.so.2
+    after: [i386-repo]  # because LP#2009278
     plugin: nil
     stage-packages:
       - libdrm2
     prime:
       - usr/lib
-      - -usr/share/doc
-      - -etc
-
-  va:
-    # Video Acceleration APIs
-    #   o libva.so.2
-    #   o libvdpau.so.1
-    plugin: nil
-    stage-packages:
-      - libva2
-      - libva-x11-2
-      - libva-drm2
-      - libva-wayland2
-      - libvdpau1
-    prime:
-      - usr/lib
-      - -usr/share
 
   x11:
     # X11 support (not much cost to having this)
+    after: [i386-repo]  # because LP#2009278
     plugin: nil
     stage-packages:
       - libx11-xcb1
@@ -90,6 +70,7 @@ parts:
       - libxcb-dri2-0
       - libxcb-dri3-0
       - libxcb-present0
+      - libxcb-randr0
       - libxcb-sync1
       - libxcb-xfixes0
       - libxcb1
@@ -99,12 +80,10 @@ parts:
     prime:
       - usr/lib
       - usr/share/X11
-      - -usr/share/doc
-      - -usr/share/lintian
-      - -usr/share/man
 
   wayland:
     # Wayland support (not much cost to having this)
+    after: [i386-repo]  # because LP#2009278
     plugin: nil
     stage-packages:
       - libwayland-client0
@@ -112,15 +91,14 @@ parts:
       - libwayland-server0
     prime:
       - usr/lib
-      - -usr/share/doc
 
   apis-i386:
       # This provides the essential APIs
       #   o libEGL.so.1
-      #   o libva.so.2
       #   o libvulkan.so.1
       #   o libGLX.so.0
       #
+      after: [i386-repo]
       plugin: nil
       stage-packages:
         - on amd64:
@@ -129,59 +107,39 @@ parts:
           - libvulkan1:i386
           - libglx0:i386
       override-prime: |
-        if [ `arch` = "x86_64" ]; then craftctl default; fi
+        if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
       prime:
+        - -usr/lib/i386-linux-gnu/dri       # libglx0 pulls dri in
+        - -usr/lib/i386-linux-gnu/libdrm_*  # and drm, as a result
+        - -usr/lib/i386-linux-gnu/libEGL_*  # libegl1 pulls libegl-mesa0 in
+        - -usr/lib/i386-linux-gnu/libGLX_*  # libglx0 pulls libglx-mesa0 in
         - usr/lib
-        - usr/share/glvnd
-        - -usr/share/X11
-        - -usr/share/bug
-        - -usr/share/doc
-        - -usr/share/lintian
-        - -usr/share/man
-        - etc/glvnd
-        - -etc/vulkan
 
   drm-i386:
     # DRM userspace
     #   o libdrm.so.2
+    after: [i386-repo]
     plugin: nil
     stage-packages:
       - on amd64:
         - libdrm2:i386
     override-prime: |
-      if [ `arch` = "x86_64" ]; then craftctl default; fi
+      if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
     prime:
       - usr/lib
-      - -usr/share/doc
-      - -etc
-
-  va-i386:
-    # Video Acceleration API
-    #   o libva.so.2
-    plugin: nil
-    stage-packages:
-      - on amd64:
-        - libva2:i386
-        - libva-x11-2
-        - libva-drm2
-        - libva-wayland2
-    override-prime: |
-      if [ `arch` = "x86_64" ]; then craftctl default; fi
-    prime:
-      - usr/lib
-      - -usr/share
 
   x11-i386:
     # X11 support (not much cost to having this)
+    after: [i386-repo]
     plugin: nil
     stage-packages:
       - on amd64:
-        - libva-x11-2:i386
         - libx11-xcb1:i386
         - libxau6:i386
         - libxcb-dri2-0:i386
         - libxcb-dri3-0:i386
         - libxcb-present0:i386
+        - libxcb-randr0:i386
         - libxcb-sync1:i386
         - libxcb-xfixes0:i386
         - libxcb1:i386
@@ -189,16 +147,14 @@ parts:
         - libxdmcp6:i386
         - libxshmfence1:i386
     override-prime: |
-      if [ `arch` = "x86_64" ]; then craftctl default; fi
+      if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
     prime:
       - usr/lib
       - usr/share/X11
-      - -usr/share/doc
-      - -usr/share/lintian
-      - -usr/share/man
 
   wayland-i386:
     # Wayland support (not much cost to having this)
+    after: [i386-repo]
     plugin: nil
     stage-packages:
       - on amd64:
@@ -206,10 +162,9 @@ parts:
         - libwayland-egl1:i386
         - libwayland-server0:i386
     override-prime: |
-      if [ `arch` = "x86_64" ]; then craftctl default; fi
+      if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then craftctl default; fi
     prime:
       - usr/lib
-      - -usr/share/doc
 
 slots:
   graphics-core22:
