@@ -17,19 +17,18 @@ architectures:
   - build-on: s390x
   - build-on: riscv64
 
-package-repositories:
-  - type: apt
-    url: http://archive.ubuntu.com/ubuntu/
-    suites: [jammy]
-    components: [main, universe]
-    architectures: [i386]
-    key-id: F6ECB3762474EDA9D21B7022871920D1991BC93C
-    key-server: keyserver.ubuntu.com
-
 parts:
   wrapper:
     plugin: dump
     source: scripts
+
+  i386-repo:
+    plugin: nil
+    override-pull: |
+      if [ ${CRAFT_TARGET_ARCH} = "amd64" ]; then
+        dpkg --add-architecture i386
+        apt-get update
+      fi
 
   apis:
     # This provides the essential APIs
@@ -37,6 +36,7 @@ parts:
     #   o libvulkan.so.1
     #   o libGLX.so.0
     #
+    after: [i386-repo]  # because LP#2009278
     plugin: nil
     stage-packages:
       - libegl1
@@ -53,6 +53,7 @@ parts:
   drm:
     # DRM userspace
     #   o libdrm.so.2
+    after: [i386-repo]  # because LP#2009278
     plugin: nil
     stage-packages:
       - libdrm2
@@ -61,6 +62,7 @@ parts:
 
   x11:
     # X11 support (not much cost to having this)
+    after: [i386-repo]  # because LP#2009278
     plugin: nil
     stage-packages:
       - libx11-xcb1
@@ -81,6 +83,7 @@ parts:
 
   wayland:
     # Wayland support (not much cost to having this)
+    after: [i386-repo]  # because LP#2009278
     plugin: nil
     stage-packages:
       - libwayland-client0
@@ -95,6 +98,7 @@ parts:
       #   o libvulkan.so.1
       #   o libGLX.so.0
       #
+      after: [i386-repo]
       plugin: nil
       stage-packages:
         - on amd64:
@@ -114,6 +118,7 @@ parts:
   drm-i386:
     # DRM userspace
     #   o libdrm.so.2
+    after: [i386-repo]
     plugin: nil
     stage-packages:
       - on amd64:
@@ -125,6 +130,7 @@ parts:
 
   x11-i386:
     # X11 support (not much cost to having this)
+    after: [i386-repo]
     plugin: nil
     stage-packages:
       - on amd64:
@@ -148,6 +154,7 @@ parts:
 
   wayland-i386:
     # Wayland support (not much cost to having this)
+    after: [i386-repo]
     plugin: nil
     stage-packages:
       - on amd64:
